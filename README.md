@@ -1,166 +1,140 @@
 # Automated CI/CD Pipeline for a Dockerized Flask Application
 
-A hands-on DevOps project focused on building, testing, containerizing, and eventually automating the deployment of a Python Flask application using Docker, GitHub Actions, and Linux.
+A containerized Python Flask application with automated testing, a production-oriented WSGI server, and Docker health monitoring. This project is designed to demonstrate practical DevOps concepts, including application deployment, containerization, and infrastructure automation.
 
 ## Project Overview
 
-This project demonstrates the development of a simple Flask web application and the implementation of DevOps practices to streamline application testing, containerization, and deployment.
+This project implements a Flask web application packaged into a Docker container. Gunicorn serves the application using multiple worker processes, while Docker HEALTHCHECK monitors application availability through a dedicated health endpoint.
 
-The application serves as the foundation for an automated CI/CD pipeline. Development currently includes Flask application development, automated testing with pytest, Git version control, and Docker containerization.
+The long-term objective is to develop a complete CI/CD pipeline that automatically tests, builds, and deploys application updates using GitHub Actions and an Ubuntu Linux server.
 
 ## Project Objective
 
-The ultimate goal is to develop a practical DevOps workflow that demonstrates source control, automated testing, Docker containerization, continuous integration, and automated deployment to a Linux environment.
+The objective of this project is to develop practical experience with DevOps workflows by progressively implementing application testing, containerization, deployment automation, and infrastructure management.
 
-## Technologies Used
+The completed implementation and future enhancements will demonstrate how application development and operational processes can be integrated into a repeatable and automated deployment workflow.
 
-- **Programming Languages:** Python
-- **Web Framework:** Flask
-- **Testing:** pytest
-- **Containerization:** Docker, Dockerfile
-- **Version Control:** Git, GitHub
-- **Operating Systems:** macOS (development), Ubuntu Linux (planned deployment)
-- **Automation:** GitHub Actions (planned)
-- **Configuration:** YAML (planned)
+## Technologies
+
+| Technology | Purpose |
+|---|---|
+| Python | Application development |
+| Flask | Web application framework |
+| Pytest | Automated application testing |
+| Docker | Application containerization |
+| Gunicorn | Production WSGI application server |
+| Linux | Container runtime environment |
+| Git & GitHub | Version control and source code management |
+| YAML | Docker and future CI/CD configuration |
 
 ## Application Features
 
-The Flask application currently provides three HTTP endpoints:
+The Flask application provides four HTTP endpoints:
 
 | Endpoint | Description |
 |---|---|
-| `/` | Displays the application homepage |
-| `/health` | Returns the application's health status |
+| `/` | Returns the application homepage |
+| `/health` | Returns application health status |
 | `/info` | Returns application version and environment information |
+| `/version` | Returns application version and name |
 
 ### Automated Testing
 
-Implemented automated application tests using pytest to verify endpoint functionality and HTTP responses.
+Pytest is used to validate application functionality and endpoint responses.
 
 Current test coverage includes:
-
 - Homepage response validation.
-- Health endpoint status and response validation.
+- Health endpoint status validation.
+- Application version and name validation.
 
-Tests are executed using:
+Run the test suite locally:
 
 ```bash
 python -m pytest -v
 ```
 
-**Current results:** Both implemented tests pass successfully.
+**Current result:** 3 tests passing.
 
-## Docker Containerization
+## Docker Implementation
 
-The Flask application has been containerized using Docker to provide an isolated and consistent runtime environment.
+The application is containerized using a custom Dockerfile based on the official `python:3.13-slim` image.
 
-### Docker Configuration
-
-A custom `Dockerfile` defines the application's container environment:
-
-- Uses the official `python:3.13-slim` base image.
-- Establishes `/app` as the container working directory.
+The Docker configuration:
+- Establishes an isolated application working directory.
 - Installs Python dependencies from `requirements.txt`.
 - Copies application source files into the container.
 - Exposes port `5001`.
-- Starts the Flask application when the container launches.
+- Starts the application using Gunicorn with two worker processes.
+- Implements a Docker health check against the `/health` endpoint.
 
-A `.dockerignore` file excludes unnecessary files and directories from the Docker build context, including local virtual environments, Git metadata, and generated cache files.
-
-### Building the Docker Image
-
-Build the application image from the project directory:
+### Build the Docker Image
 
 ```bash
 docker build -t automated-devops-project .
 ```
 
-### Running the Container
-
-Create and launch a container from the built image:
+### Run the Container
 
 ```bash
 docker run -d --name flask-devops-app -p 5001:5001 automated-devops-project
 ```
 
-The application can then be accessed locally:
-
-- Homepage: http://localhost:5001
-- Health Check: http://localhost:5001/health
-- Application Information: http://localhost:5001/info
-
-### Container Management
-
-The following Docker commands are used to manage and monitor the application container:
-
-```bash
-# Display running containers
-docker ps
-
-# Display all containers, including stopped containers
-docker ps -a
-
-# View application logs
-docker logs flask-devops-app
-
-# Stop the container
-docker stop flask-devops-app
-
-# Start an existing stopped container
-docker start flask-devops-app
-
-# Restart the container
-docker restart flask-devops-app
-```
-
-### Application Verification
-
-Verified successful container execution through browser testing and Docker logs.
-
-Confirmed that:
-- The Flask application starts successfully inside the container.
-- All three application endpoints return successful HTTP responses.
-- Docker captures application startup output and incoming HTTP requests.
-- The container can be stopped and restarted without rebuilding the image.
-
-## Repository Structure
+The application is accessible at:
 
 ```text
-automated-devops-project/
-│
-├── app.py
-├── requirements.txt
-├── Dockerfile
-├── .dockerignore
-├── .gitignore
-│
-├── tests/
-│   └── test_app.py
-│
-└── README.md
+http://localhost:5001
 ```
 
-## Current Development Status
+### Monitor Container Status
 
-| Component | Status |
+```bash
+docker ps
+```
+
+### View Application Logs
+
+```bash
+docker logs flask-devops-app
+```
+
+### Check Container Health
+
+```bash
+docker inspect --format='{{json .State.Health}}' flask-devops-app
+```
+
+The Docker health check periodically sends an HTTP request to the application's `/health` endpoint and reports the container's health status.
+
+## Project Structure
+
+```text
+automated_devops_project/
+│
+├── .github/
+│   └── workflows/       # Planned GitHub Actions workflows
+│
+├── tests/
+│   └── test_app.py      # Automated application tests
+│
+├── .dockerignore        # Excludes unnecessary Docker build files
+├── .gitignore           # Excludes unnecessary Git files
+├── app.py               # Flask application
+├── Dockerfile           # Docker image configuration
+├── requirements.txt     # Python dependencies
+└── README.md            # Project documentation
+```
+
+## Development Roadmap
+
+| Feature | Status |
 |---|---|
-| Flask application | Completed |
-| Automated pytest tests | Completed |
-| Git and GitHub integration | Completed |
-| Dockerfile configuration | Completed |
-| Docker image creation | Completed |
-| Container execution and management | Completed |
-| Production WSGI server | Planned |
-| GitHub Actions CI/CD pipeline | Planned |
-| Automated Linux deployment | Planned |
-| Application logging and monitoring enhancements | Planned |
-
-## Future Development
-
-The next stages of development will focus on expanding the project into a fully automated CI/CD workflow:
-
-1. **Production Configuration:** Replace Flask's built-in development server with a production WSGI server such as Gunicorn.
-2. **CI/CD Automation:** Implement GitHub Actions workflows to automatically execute tests and build Docker images when changes are pushed to the repository.
-3. **Linux Deployment:** Configure an Ubuntu Linux server to host the containerized application.
-4. **Automated Deployment:** Extend the CI/CD pipeline to deploy application updates to the remote Linux server.
-5. **Monitoring and Health Checks:** Expand application health verification and introduce additional logging and monitoring capabilities.
+| Flask application and REST endpoints | Complete |
+| Automated testing with Pytest | Complete |
+| Docker containerization | Complete |
+| Gunicorn production WSGI server | Complete |
+| Multi-worker application configuration | Complete |
+| Docker health monitoring | Complete |
+| GitHub Actions CI pipeline | In Progress |
+| Automated Docker image builds | Planned |
+| Ubuntu Linux deployment | Planned |
+| Continuous Deployment (CD) | Planned |

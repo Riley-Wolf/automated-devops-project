@@ -16,5 +16,8 @@ COPY . .
 # 6. Document the port used by the application
 EXPOSE 5001
 
-# 7. Start the Flask application
-CMD ["python", "app.py"]
+# 7. Check application health
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5001/health', timeout=3)"
+# 8. Start the Flask application
+CMD ["gunicorn", "--workers", "2", "--bind", "0.0.0.0:5001", "app:app"]
